@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Sharphound": {
+      "commandName": "Project",
+      "commandLineArgs": "-i --domaincontroller DC1.shenanigans.labs --usn 446755 -v 2"
+    }
+  }
+}

@@ -437,7 +437,8 @@ namespace Sharphound {
                         SearchForest = options.SearchForest,
                         RecurseDomains = options.RecurseDomains,
                         DoLocalAdminSessionEnum = options.DoLocalAdminSessionEnum,
-                        ParititonLdapQueries = options.PartitionLdapQueries
+                        ParititonLdapQueries = options.PartitionLdapQueries,
+                        IncrementalCollection = options.Incremental
                     };
 
                     var ldapOptions = new LdapConfig {
@@ -490,6 +491,12 @@ namespace Sharphound {
                         }
                     }
 
+                    if (options.Incremental == true && options.DomainController == null) {
+                        logger.LogError(
+                                "You must specify --domaincontroller option if you perform an incremental collection!");
+                        return;
+                    }
+
                     IContext context = new BaseContext(logger, ldapOptions, flags) {
                         DomainName = options.Domain,
                         CacheFileName = options.CacheName,
@@ -511,7 +518,9 @@ namespace Sharphound {
                         ZipPassword = options.ZipPassword,
                         IsFaulted = false,
                         LocalAdminUsername = options.LocalAdminUsername,
-                        LocalAdminPassword = options.LocalAdminPassword
+                        LocalAdminPassword = options.LocalAdminPassword,
+                        IsIncrementalCollection = options.Incremental,
+                        FirstUSN = options.USN
                     };
 
                     var cancellationTokenSource = new CancellationTokenSource();
@@ -545,6 +554,8 @@ namespace Sharphound {
                     context = await links.AwaitLoopCompletion(context);
                     context = links.SaveCacheFile(context);
                     links.Finish(context);
+
+                    logger.LogInformation($"[Incremental Collection] Highest seen USN for {ldapOptions.Server} is {context.HighestSeenUSN}");
                 });
             } catch (Exception ex) {
                 logger.LogError($"Error running SharpHound: {ex.Message}\n{ex.StackTrace}");
