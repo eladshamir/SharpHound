@@ -99,7 +99,7 @@ namespace Sharphound.Writers
                 DataType = DataType,
                 Version = DataVersion,
                 CollectorVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-                Incremental = _context.IsIncrementalCollection
+                Incremental = _context.IsIncrementalCollection && _context.FirstUSN > 0
             };
 
             if (_context.IsIncrementalCollection) meta.HighestUSN = _context.HighestSeenUSN;
