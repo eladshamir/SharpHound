@@ -555,7 +555,8 @@ namespace Sharphound {
                     context = links.SaveCacheFile(context);
                     links.Finish(context);
 
-                    logger.LogInformation($"[Incremental Collection] Highest seen USN for {ldapOptions.Server} is {context.HighestSeenUSN}");
+                    if (context.IsIncrementalCollection)
+                        logger.LogCritical($"[Incremental Collection] Highest seen USN for {ldapOptions.Server} is {context.HighestSeenUSN}");
                 });
             } catch (Exception ex) {
                 logger.LogError($"Error running SharpHound: {ex.Message}\n{ex.StackTrace}");
